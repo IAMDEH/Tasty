@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
+    <color name="colorTextBackground">#aad4d1d1</color>
+    <color name="colorTextColorWhite">#ffffffff</color>
+
     <color name="colorPrimary">#255691</color>
     <color name="colorPrimaryDark">#192B41</color>
     <color name="colorAccent">#F9616E</color>
     <color name="colorAccentDark">#df5662</color>
     <color name="colorAccentLight">#ff9ca4</color>
-
-
+    <color name="colorAccenWhite">#faf8f4</color>
+    <color name="colorAccenBack">#fce6e5e4</color>
+    <color name="colorAccenShadow">#af060606</color>
+    <color name="colorAccenShadowButtonMenu">#b9244b80</color>
+    <color name="colorAccenShadowButtonSpecial">#b924804a</color>
+    <color name="colorAccenShadowButtonOffre">#b9802429</color>
+    <color name="colorAccenShadowButtonInfo">#b957d0c4</color>
+    <color name="colorAccenShadowReservation">#a51f2d96</color>
+    <color name="colorRservation">#ac3f51b5</color>
 </resources>

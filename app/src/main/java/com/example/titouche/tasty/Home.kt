@@ -1,5 +1,6 @@
 package com.example.titouche.tasty
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -7,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.content_home.*
+import org.jetbrains.anko.toast
 
 class Home : AppCompatActivity() {
 
@@ -14,7 +17,13 @@ class Home : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         //setSupportActionBar(toolbar)
+        Start.setOnClickListener({view ->
+            val intent = Intent(this,
+                    MainActivity::class.java)
+            startActivity(intent)
+        })
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
