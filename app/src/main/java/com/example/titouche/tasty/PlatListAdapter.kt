@@ -11,11 +11,12 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import org.jetbrains.anko.toast
+import com.bumptech.glide.Glide
 
 class PlatListAdapter(private var myDataset: ArrayList<Plat>, var mCtx: Context): RecyclerView.Adapter<PlatListAdapter.ViewHolder>(){
     class ViewHolder (holder : View): RecyclerView.ViewHolder(holder){
         val nom = holder.findViewById<TextView>(R.id.nomp)
-        var image = holder.findViewById<ImageView>(R.id.image)
+       var image = holder.findViewById<ImageView>(R.id.image)
         var description = holder.findViewById<TextView>(R.id.description)
         val order = holder.findViewById<ImageButton>(R.id.order)
         //val dialog = android.support.v7.app.AlertDialog.Builder(holder.getContext())
@@ -29,8 +30,10 @@ class PlatListAdapter(private var myDataset: ArrayList<Plat>, var mCtx: Context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         holder.nom.text = myDataset[position].nom
-        holder.image.setImageResource(myDataset[position].image)
+        //holder.image.setImageResource(myDataset[position].image)
+        Glide.with(mCtx).load(RetrofitService.baseUrl+myDataset[position].image).into(holder.image)
         holder.description.text = myDataset[position].description
 
         holder.order.setOnClickListener({view->
@@ -40,8 +43,8 @@ class PlatListAdapter(private var myDataset: ArrayList<Plat>, var mCtx: Context)
 //            holder.dialog.setView(holder.dialogView)
 //           holder.dialog.setCancelable(true)
             val alert = AlertDialog.Builder(mCtx)
-            //holder.dialog.setPositiveButton("Commander",{ dialogInterface: DialogInterface, i: Int -> })
-            //holder.dialog.setNegativeButton("Annuler",{ dialogInterface: DialogInterface, i: Int -> })
+            alert.setPositiveButton("Commander",{ dialogInterface: DialogInterface, i: Int -> })
+            alert.setNegativeButton("Annuler",{ dialogInterface: DialogInterface, i: Int -> })
             alert.setView(alertLayout)
             alert.setCancelable(true)
             val customDialog = alert.create()

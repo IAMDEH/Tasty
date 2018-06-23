@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.bumptech.glide.Glide
 import org.jetbrains.anko.toast
 
 
@@ -29,7 +30,8 @@ class EntreeListAdapter(private var myDataset: ArrayList<Entree>, var mCtx: Cont
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.nom.text = myDataset[position].nom
-        holder.image.setImageResource(myDataset[position].image)
+        //holder.image.setImageResource(myDataset[position].image)
+        Glide.with(mCtx).load(RetrofitService.baseUrl+myDataset[position].image).into(holder.image)
         holder.description.text = myDataset[position].description
 
 

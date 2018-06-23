@@ -8,9 +8,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.LinearLayout
-import org.jetbrains.anko.toast
+import android.widget.Toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -23,6 +25,7 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class DessertListFragment : Fragment() {
+    lateinit var res : Restaurant
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -42,34 +45,75 @@ class DessertListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        res = getActivity()!!.intent.getSerializableExtra("resto") as Restaurant
 
-        Initialize()
+        //Initialize()
+        loadData(res.id)
+//        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+//        viewAdapter = DessertListAdapter(myDataset, getActivity()!!)
+//        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+//            setHasFixedSize(true)
+//            layoutManager = viewManager
+//            adapter = viewAdapter
+//        }
 
-        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
-        viewAdapter = DessertListAdapter(myDataset, getActivity()!!)
-        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
+
+    }
+
+//    fun Initialize(){
+//        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
+//                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
+//        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
+//                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
+//        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
+//                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
+//        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
+//                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
+//        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
+//                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
+//        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
+//                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
+//    }
+private fun loadData(id: Int) {
+    val call = RetrofitService.endpoint.getRestaurantDesserts(id)
+    call.enqueue(object: Callback<ArrayList<Dessert>> {
+
+        override fun onFailure(call: Call<ArrayList<Dessert>>?, t: Throwable?) {
+            //progressBar.visibility = View.GONE
+            //toast("erreur")
+            Toast.makeText(getActivity()!!, "error while loading desserts", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onResponse(call: Call<ArrayList<Dessert>>?, response: Response<ArrayList<Dessert>>?) {
+            //progressBar.visibility = View.GONE
+            if (response?.isSuccessful!!) {
+
+
+                val list:ArrayList<Dessert> = response.body()!!
+
+                for (item in list) {
+                    myDataset.add(item)
+                }
+            } else {
+                Toast.makeText(getActivity()!!, response.toString(), Toast.LENGTH_SHORT).show()
+            }
+            viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+            viewAdapter = DessertListAdapter(myDataset, this@DessertListFragment.getActivity()!!)
+            recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+                setHasFixedSize(true)
+                layoutManager = viewManager
+                adapter = viewAdapter
+            }
         }
 
 
-    }
 
-    fun Initialize(){
-        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
-                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
-        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
-                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
-        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
-                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
-        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
-                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
-        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
-                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
-        myDataset.add(Dessert("Mousse au chocolat", R.drawable.moussechoco,
-                "Dessert conçue par Sébastien Roux, chef du Golfe Hôtel à Brides-les-Bains."))
-    }
+    })
+
+
+
+
+}
 
 
 }

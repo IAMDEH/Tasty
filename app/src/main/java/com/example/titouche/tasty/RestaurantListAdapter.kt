@@ -30,14 +30,18 @@ class RestaurantListAdapter(private var myDataset: ArrayList<Restaurant>, var mC
         holder.nom.text = myDataset[position].nom
         //holder.image.setImageResource(myDataset[position].image)
         Glide.with(mCtx).load(RetrofitService.baseUrl+myDataset[position].image).into(holder.image)
+
         holder.phone.text = myDataset[position].phone
         holder.email.text = myDataset[position].email
         holder.info.setOnClickListener({view->
             val intent = Intent(view.getContext(),resto::class.java )
+            intent.putExtra("resto", myDataset[position])
             view.getContext().startActivity(intent)
         })
         holder.itemView.setOnClickListener({view->
             val intent = Intent(view.getContext(),resto::class.java )
+            //Passer l'objet restaurant à l'activité suivante pour pouvoir utiliser son id
+            intent.putExtra("resto", myDataset[position])
             view.getContext().startActivity(intent)
         })
 

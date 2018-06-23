@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.activity_menu.*
 
 class MenuActivity : AppCompatActivity() {
+    lateinit var res: Restaurant
     private var content: FrameLayout? = null
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -35,6 +36,7 @@ class MenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
+        res = intent.getSerializableExtra("resto") as Restaurant
 
         content = findViewById<FrameLayout>(R.id.frameLayout)
         val navigation = findViewById<BottomNavigationView>(R.id.navigation)

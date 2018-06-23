@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import org.jetbrains.anko.toast
 
 class VegetarienListAdapter(private var myDataset: ArrayList<Vegetarien>, var mCtx: Context): RecyclerView.Adapter<VegetarienListAdapter.ViewHolder>(){
@@ -29,7 +30,9 @@ class VegetarienListAdapter(private var myDataset: ArrayList<Vegetarien>, var mC
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.nom.text = myDataset[position].nom
-        holder.image.setImageResource(myDataset[position].image)
+        //holder.image.setImageResource(myDataset[position].image)
+        Glide.with(mCtx).load(RetrofitService.baseUrl+myDataset[position].image).into(holder.image)
+
         holder.description.text = myDataset[position].description
 
         holder.order.setOnClickListener({view->

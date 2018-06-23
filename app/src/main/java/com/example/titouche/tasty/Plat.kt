@@ -1,5 +1,7 @@
 package com.example.titouche.tasty
 
-class Plat(var nom:String, var image:Int, var description:String) {
+import java.io.Serializable
+
+data class Plat(var id:Int, var id_rest:Int, var nom:String, var image:String, var description:String): Serializable{
 
 }

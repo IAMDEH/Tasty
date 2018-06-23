@@ -9,6 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,6 +25,8 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class DiabetiqueListFragment : Fragment() {
+    lateinit var res : Restaurant
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -39,36 +45,76 @@ class DiabetiqueListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        res = getActivity()!!.intent.getSerializableExtra("resto") as Restaurant
 
-        initialize()
-
-        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
-        viewAdapter = DiabetiqueListAdapter(myDataset, getActivity()!!)
-        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+       // initialize()
+        loadData(res.id)
+//        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+//        viewAdapter = DiabetiqueListAdapter(myDataset, getActivity()!!)
+//        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+//            setHasFixedSize(true)
+//            layoutManager = viewManager
+//            adapter = viewAdapter
+//        }
 
 
     }
 
-    fun initialize() {
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
-        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
-                "Recette Diabète juste pour vous."))
+//    fun initialize() {
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//        myDataset.add(Diabetique("Boulettes de Merlan à la Provençale", R.drawable.boulettesmerlanprovencale,
+//                "Recette Diabète juste pour vous."))
+//    }
+
+    private fun loadData(id: Int) {
+        val call = RetrofitService.endpoint.getRestaurantDiabetiques(id)
+        call.enqueue(object: Callback<ArrayList<Diabetique>> {
+
+            override fun onFailure(call: Call<ArrayList<Diabetique>>?, t: Throwable?) {
+                //progressBar.visibility = View.GONE
+                //toast("erreur")
+                Toast.makeText(getActivity()!!, "error while loading diabetiques", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call<ArrayList<Diabetique>>?, response: Response<ArrayList<Diabetique>>?) {
+                //progressBar.visibility = View.GONE
+                if (response?.isSuccessful!!) {
+
+
+                    val list:ArrayList<Diabetique> = response.body()!!
+
+                    for (item in list) {
+                        myDataset.add(item)
+                    }
+                } else {
+                    Toast.makeText(getActivity()!!, response.toString(), Toast.LENGTH_SHORT).show()
+                }
+                viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+                viewAdapter = DiabetiqueListAdapter(myDataset, this@DiabetiqueListFragment.getActivity()!!)
+                recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+                    setHasFixedSize(true)
+                    layoutManager = viewManager
+                    adapter = viewAdapter
+                }
+            }
+
+
+
+        })
+
+
+
+
     }
-
-
 }

@@ -1,5 +1,5 @@
 package com.example.titouche.tasty
 
-class Entree(var nom:String, var image:Int, var description:String) {
+class Entree(var id:Int, var id_res:Int, var nom:String, var image:String, var description:String) {
 
 }

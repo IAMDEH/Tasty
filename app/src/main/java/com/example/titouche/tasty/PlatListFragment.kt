@@ -9,6 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,6 +25,8 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class PlatListFragment : Fragment() {
+    lateinit var res : Restaurant
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -39,32 +45,78 @@ class PlatListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        res = getActivity()!!.intent.getSerializableExtra("resto") as Restaurant
 
-        initialize()
+        //initialize()
+        loadData(res.id)
 
-        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
-        viewAdapter = PlatListAdapter(myDataset, getActivity()!!)
-        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+        //viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+//        viewAdapter = PlatListAdapter(myDataset, this!!.getActivity()!!)
+//
+//
+//        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+//            setHasFixedSize(true)
+//            layoutManager = viewManager
+//            adapter = viewAdapter
+//        }
 
 
     }
 
-    fun initialize(){
-        myDataset.add(Plat("Cuisses lapin", R.drawable.cuisselapinmoutarde,
-                "Le lapin à la moutarde est un grand classique de la cuisine française."))
-        myDataset.add(Plat("Cuisses lapin", R.drawable.cuisselapinmoutarde,
-                "Le lapin à la moutarde est un grand classique de la cuisine française."))
-        myDataset.add(Plat("Cuisses lapin", R.drawable.cuisselapinmoutarde,
-                "Le lapin à la moutarde est un grand classique de la cuisine française."))
-        myDataset.add(Plat("Cuisses lapin", R.drawable.cuisselapinmoutarde,
-                "Le lapin à la moutarde est un grand classique de la cuisine française."))
-        myDataset.add(Plat("Cuisses lapin", R.drawable.cuisselapinmoutarde,
-                "Le lapin à la moutarde est un grand classique de la cuisine française."))
+//    fun initialize(){
+//        myDataset.add(Plat(null,null,"Cuisses lapin", R.drawable.cuisselapinmoutarde,
+//                "Le lapin à la moutarde est un grand classique de la cuisine française."))
+//        myDataset.add(Plat(null,null,"Cuisses lapin", R.drawable.cuisselapinmoutarde,
+//                "Le lapin à la moutarde est un grand classique de la cuisine française."))
+//        myDataset.add(Plat(null,null,"Cuisses lapin", R.drawable.cuisselapinmoutarde,
+//                "Le lapin à la moutarde est un grand classique de la cuisine française."))
+//        myDataset.add(Plat(null,null,"Cuisses lapin", R.drawable.cuisselapinmoutarde,
+//                "Le lapin à la moutarde est un grand classique de la cuisine française."))
+//        myDataset.add(Plat(null,null,"Cuisses lapin", R.drawable.cuisselapinmoutarde,
+//                "Le lapin à la moutarde est un grand classique de la cuisine française."))
+//    }
+
+    private fun loadData(id: Int) {
+        //val listPlats = mutableListOf<Plat>()
+        val call = RetrofitService.endpoint.getRestaurantPlats(id)
+        call.enqueue(object: Callback<ArrayList<Plat>> {
+
+            override fun onFailure(call: Call<ArrayList<Plat>>?, t: Throwable?) {
+                //progressBar.visibility = View.GONE
+                //toast("erreur")
+                Toast.makeText(getActivity()!!, "error while loading plats", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call<ArrayList<Plat>>?, response: Response<ArrayList<Plat>>?) {
+                //progressBar.visibility = View.GONE
+                if (response?.isSuccessful!!) {
+
+
+                    val list:ArrayList<Plat> = response.body()!!
+
+                    for (item in list) {
+          //              listPlats.add(item)
+                        myDataset.add(item)
+                        //Toast.makeText(getActivity()!!, ""+myDataset, Toast.LENGTH_LONG).show()//le toast affiche les plats
+                    }
+                } else {
+                    Toast.makeText(getActivity()!!, response.toString(), Toast.LENGTH_SHORT).show()
+                }
+                viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+                viewAdapter = PlatListAdapter(myDataset, this@PlatListFragment.getActivity()!!)
+                recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+                    setHasFixedSize(true)
+                    layoutManager = viewManager
+                    adapter = viewAdapter
+                }
+            }
+
+
+
+        })
+
+
+
+
     }
-
-
 }

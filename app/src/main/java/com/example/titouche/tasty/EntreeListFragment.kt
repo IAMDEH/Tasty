@@ -12,8 +12,12 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Toast
 import com.example.titouche.tasty.R.styleable.AlertDialog
 import org.jetbrains.anko.toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,6 +30,7 @@ private const val ARG_PARAM2 = "param2"
  *
  */
 class EntreeListFragment : Fragment() {
+    lateinit var res : Restaurant
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -45,34 +50,34 @@ class EntreeListFragment : Fragment() {
 
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        Initialize()
-
-        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
-        viewAdapter = EntreeListAdapter(myDataset, getActivity()!!)
-        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+         res = getActivity()!!.intent.getSerializableExtra("resto") as Restaurant
+        //Initialize()
+        loadData(res.id)
+//        viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+//        viewAdapter = EntreeListAdapter(myDataset, getActivity()!!)
+//        recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+//            setHasFixedSize(true)
+//            layoutManager = viewManager
+//            adapter = viewAdapter
+//        }
 
 
 
 
     }
 
-    fun Initialize(){
-        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
-                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
-        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
-                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
-        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
-                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
-        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
-                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
-        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
-                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
-    }
+//    fun Initialize(){
+//        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
+//                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
+//        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
+//                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
+//        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
+//                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
+//        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
+//                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
+//        myDataset.add(Entree("Tortilla", R.drawable.tortilla,
+//                "Se consomme chaud ou froid. Avec du ketchup, c'est aussi très bon."))
+//    }
 
     companion object {
         fun newInstance(): EntreeListFragment {
@@ -81,6 +86,47 @@ class EntreeListFragment : Fragment() {
             fragmentHome.arguments = args
             return fragmentHome
         }
+
+    }
+
+    private fun loadData(id: Int) {
+        val call = RetrofitService.endpoint.getRestaurantEntrees(id)
+        call.enqueue(object: Callback<ArrayList<Entree>> {
+
+            override fun onFailure(call: Call<ArrayList<Entree>>?, t: Throwable?) {
+                //progressBar.visibility = View.GONE
+                //toast("erreur")
+                Toast.makeText(getActivity()!!, "error while loading entrees", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call<ArrayList<Entree>>?, response: Response<ArrayList<Entree>>?) {
+                //progressBar.visibility = View.GONE
+                if (response?.isSuccessful!!) {
+
+
+                    val list:ArrayList<Entree> = response.body()!!
+
+                    for (item in list) {
+                        myDataset.add(item)
+                    }
+                } else {
+                    Toast.makeText(getActivity()!!, response.toString(), Toast.LENGTH_SHORT).show()
+                }
+                viewManager = LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)
+                viewAdapter = EntreeListAdapter(myDataset, this@EntreeListFragment.getActivity()!!)
+                recyclerView = getActivity()!!.findViewById<RecyclerView>(R.id.recyclerView).apply {
+                    setHasFixedSize(true)
+                    layoutManager = viewManager
+                    adapter = viewAdapter
+                }
+            }
+
+
+
+        })
+
+
+
 
     }
 }
